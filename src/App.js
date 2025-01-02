@@ -1,10 +1,11 @@
 import React from 'react'
-import Header from './components/Layout/Header'
-
+import { RouterProvider } from 'react-router-dom'
+import AppRouter from './routes/AppRouter'
+import AppRouter from './routes/AppRouter'
 const App = () => {
   return (
     <div>
-      <Header/>
+      <RouterProvider router={AppRouter}/>
     </div>
   )
 }
