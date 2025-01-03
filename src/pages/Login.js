@@ -1,6 +1,6 @@
 import React from 'react'
 import {  Container, Row, Col } from 'react-bootstrap';
-
+import sideImage from '../../src/assets/images/cart.jpg'
 
 const Login = () => {
   return (
@@ -9,7 +9,7 @@ const Login = () => {
   <Row className="align-items-center">
     <Col md={6} className="text-center">
       <img
-        src="/apple2.avif"
+        src={sideImage}
         alt="Sign Up"
         className="img-fluid rounded"
         style={{ maxHeight: '650px' }}
