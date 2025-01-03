@@ -1,16 +1,21 @@
 import {createBrowserRouter} from "react-router-dom"
-import ProtectedRoute from "./ProtectedRoute";
 import Header from "../components/Layout/Header";
+import HomePage from "../pages/HomePage";
+import CartPage from "../pages/CartPage";
 const AppRouter =createBrowserRouter(
     [
         {
             path:"/",
-            element:<ProtectedRoute/>,
+            element:<Header/>,
             children:[{
                 path:"/",
-                element:<Header/>,
+                element:<HomePage/>,
                 index:true
             },
+            {
+                path:"/Cartpage",
+                element:<CartPage/>
+            }
         ]
 
 
