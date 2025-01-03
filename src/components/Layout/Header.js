@@ -1,11 +1,17 @@
 import React from "react";
 import { Navbar, Nav, Form, Container } from "react-bootstrap";
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useLocation } from "react-router-dom";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import SearchIcon from '@mui/icons-material/Search';
 import Footer from "./Footer";
+
 const Header = () => {
+  const location = useLocation();
+
+  // Check if the current page is '/login' to hide the icons
+  const isAuthPage = location.pathname === '/login'||location.pathname==='/signup'
+  
   return (
     <div>
       {/* Announcement Bar */}
@@ -58,22 +64,23 @@ const Header = () => {
               />
               <SearchIcon className="position-absolute top-50 translate-middle-y text-muted" style={{ right: '10px', cursor: 'pointer' }} /> 
             </Form>
-            <div className="d-flex align-items-center">
-              <FavoriteBorderIcon className="text-dark me-3" style={{ cursor: 'pointer' }} /> 
-              <ShoppingCartIcon className="text-dark" style={{ cursor: 'pointer' }} /> 
-            </div>
- 
-                      </Navbar.Collapse>
-                      
+
+            {/* Conditionally render the icons based on the current route */}
+            {!isAuthPage &&(
+              <div className="d-flex align-items-center">
+                <FavoriteBorderIcon className="text-dark me-3" style={{ cursor: 'pointer' }} /> 
+                <ShoppingCartIcon className="text-dark" style={{ cursor: 'pointer' }} /> 
+              </div>
+            )}
+          </Navbar.Collapse>
         </Container>
       </Navbar>
-      
-    
+
+      {/* Outlet for rendering child routes */}
       <Outlet />
-      <div>
-        <Footer/>
-      </div>
-        
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };

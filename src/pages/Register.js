@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FcGoogle } from 'react-icons/fc';
 import { Link } from 'react-router-dom';
-import sideImage from '../../src/assets/images/cart.jpg'
+import sideImage from '../../src/assets/images/cart.jpg';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -77,7 +77,7 @@ const Register = () => {
             <p className="text-muted mb-4">Enter your details below</p>
 
             <form onSubmit={handleSubmit}>
-              {[
+              {[ 
                 { type: 'text', name: 'name', placeholder: 'Name' },
                 { type: 'email', name: 'email', placeholder: 'Email' },
                 { type: 'text', name: 'phoneNumber', placeholder: 'Phone Number' },
