@@ -2,13 +2,18 @@ import { ArrowRight } from '@mui/icons-material'
 import React from 'react'
 import { Carousel, Col, Container, Row } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
+import image1 from '../assets/images/image12.jpg'
+import image2 from '../assets/images/image16.png'
+import image3 from '../assets/images/image18.png'
+import image4 from '../assets/images/image17.png'
+import image5 from '../assets/images/image19.png'
 
 const HomePage = () => {
   return (
     <div>
       <div>
          {/* Main Content */}
-      <Container fluid className="mt-4 ">
+      <Container fluid className="mt-4 mb-4"> {/* Add mb-4 for bottom margin */}
         <Row>
           {/* Left Menu (Categories) */}
           <Col md={3} className="bg-gray-100 p-12">
@@ -59,7 +64,6 @@ const HomePage = () => {
                 </Link>
               </li>
             </ul>
-
           </Col>
 
           {/* Right (Carousel) */}
@@ -68,7 +72,7 @@ const HomePage = () => {
               <Carousel.Item>
                 <img
                   className="d-block w-100 object-cover h-344"
-                  src="/img1.jpg"
+                  src={image1}
                   alt="First slide"
                 />
                 <Carousel.Caption>
@@ -78,7 +82,7 @@ const HomePage = () => {
               <Carousel.Item>
                 <img
                   className="d-block w-100 object-cover h-344"
-                  src="/img2.jpg"
+                  src={image2}
                   alt="Second slide"
                 />
                 <Carousel.Caption>
@@ -88,7 +92,7 @@ const HomePage = () => {
               <Carousel.Item>
                 <img
                   className="d-block w-100 object-cover h-344"
-                  src="/img3.jpg"
+                  src={image3}
                   alt="Third slide"
                 />
                 <Carousel.Caption>
@@ -98,7 +102,7 @@ const HomePage = () => {
               <Carousel.Item>
                 <img
                   className="d-block w-100 object-cover h-344"
-                  src="/img1.jpg"
+                  src={image4}
                   alt="Fourth slide"
                 />
                 <Carousel.Caption>
@@ -108,7 +112,7 @@ const HomePage = () => {
               <Carousel.Item>
                 <img
                   className="d-block w-100 object-cover h-344"
-                  src="/img2.jpg"
+                  src={image5}
                   alt="Fifth slide"
                 />
                 <Carousel.Caption>

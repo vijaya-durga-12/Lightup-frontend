@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import { FcGoogle } from 'react-icons/fc';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import sideImage from '../../src/assets/images/cart.jpg';
 
 const Register = () => {
+  const Navigater=useNavigate()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phoneNumber: '',
+    phoneNumber: '',  
     password: '',
-    confirmPassword: '',
+    role: '',
   });
+
+  const [error, setError] = useState(''); // To track errors
+  const [loading, setLoading] = useState(false); // To show loading state
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,45 +23,51 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match');
-      return;
-    }
-
+    setLoading(true); // Set loading state to true
+  
     try {
       const newUser = {
         id: Date.now(),
-        username: formData.name,
+        name: formData.name,
         email: formData.email,
-        user_password: formData.password,
-        user_confirmpassword: formData.confirmPassword,
-        user_phonenumber: formData.phoneNumber,
+        password: formData.password,
+        role: formData.role,
+        phone_number: formData.phoneNumber, // Corrected to phone_number
       };
-
+  
+      console.log('User data being sent to the API:', newUser); // Log the data being sent
+  
       const response = await fetch(
-        'https://your-api-endpoint/register', 
+        'https://39d2-2401-4900-1cb0-3d23-787c-3e46-f9fb-fb1.ngrok-free.app/api/users/register',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newUser),
         }
       );
-
+  
+      setLoading(false); // Set loading state to false after the request
+  
       if (!response.ok) {
-        throw new Error('Failed to create account');
+        const errorData = await response.json();
+        console.log('Error response:', errorData); // Log the error response from the API
+        setError(errorData.message || 'Failed to create account');
+        return;
       }
-
-      const data = await response.json();
+  
+      // const data = await response.json();
       alert('User registered successfully');
-    } catch (error) {
+      Navigater('/login')
+    } catch (error) { 
+      setLoading(false); // Set loading state to false in case of error
       console.error('Error during registration:', error);
-      alert('Registration failed');
+      setError('Registration failed, please try again later');
     }
   };
-
+  
   const handleGoogleSignUp = () => {
     console.log('Google Sign Up clicked');
+    // Google Sign Up implementation (e.g., Firebase or OAuth)
   };
 
   return (
@@ -80,9 +90,9 @@ const Register = () => {
               {[ 
                 { type: 'text', name: 'name', placeholder: 'Name' },
                 { type: 'email', name: 'email', placeholder: 'Email' },
-                { type: 'text', name: 'phoneNumber', placeholder: 'Phone Number' },
+                { type: 'text', name: 'phoneNumber', placeholder: 'Phone Number' }, // Fixed name here
                 { type: 'password', name: 'password', placeholder: 'Password' },
-                { type: 'password', name: 'confirmPassword', placeholder: 'Confirm Password' },
+                { type: 'text', name: 'role', placeholder: 'Role' },
               ].map((input, index) => (
                 <input
                   key={index}
@@ -97,17 +107,20 @@ const Register = () => {
                 />
               ))}
 
+              {error && <p className="text-danger">{error}</p>} {/* Display error message */}
+
               <button
                 type="submit"
                 className="w-full py-3 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 focus:outline-none"
+                disabled={loading} // Disable button when loading
               >
-                Create Account
+                {loading ? 'Creating Account...' : 'Create Account'}
               </button>
             </form>
 
             <button
               onClick={handleGoogleSignUp}
-              className="w-100 d-flex align-items-center justify-content-center mt-3"
+              className="w-full d-flex align-items-center justify-content-center mt-3 py-2 px-4 border border-gray-300 rounded-lg"
             >
               <FcGoogle className="me-2" size={20} />
               Sign Up with Google
