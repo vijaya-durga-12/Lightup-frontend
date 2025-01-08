@@ -1,19 +1,32 @@
-import { ArrowRight } from '@mui/icons-material'
-import React from 'react'
-import { Carousel, Col, Container, Row } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
-import image1 from '../assets/images/image12.jpg'
-import image2 from '../assets/images/image16.png'
-import image3 from '../assets/images/image18.png'
-import image4 from '../assets/images/image17.png'
-import image5 from '../assets/images/image19.png'
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { ArrowRight } from '@mui/icons-material';
+import { Carousel, Col, Container, Row } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import { fetchproductsrequest } from '../features/product/productActions'
+import image1 from '../assets/images/image12.jpg';
+import image2 from '../assets/images/image16.png';
+import image3 from '../assets/images/image18.png';
+import image4 from '../assets/images/image17.png';
+import image5 from '../assets/images/image19.png';
 
 const HomePage = () => {
+  const dispatch = useDispatch();
+
+  // Accessing the products, loading, and error state from Redux store
+  const { products = [], error = null, loading = false } = useSelector((state) => state.product || {});
+
+  
+
+  // UseEffect to dispatch fetch request on page load
+  useEffect(() => {
+    dispatch(fetchproductsrequest());
+  }, [dispatch]);
+
   return (
     <div>
-      <div>
-         {/* Main Content */}
-      <Container fluid className="mt-4 mb-4"> {/* Add mb-4 for bottom margin */}
+      {/* Main Content */}
+      <Container fluid className="mt-4 mb-4">
         <Row>
           {/* Left Menu (Categories) */}
           <Col md={3} className="bg-gray-100 p-12">
@@ -66,7 +79,7 @@ const HomePage = () => {
             </ul>
           </Col>
 
-          {/* Right (Carousel) */}
+          {/* Right Section (Carousel) */}
           <Col md={9} className="pr-20">
             <Carousel>
               <Carousel.Item>
@@ -122,10 +135,44 @@ const HomePage = () => {
             </Carousel>
           </Col>
         </Row>
-      </Container>
-      </div>
-    </div>
-  )
-}
 
-export default HomePage
+        {/* Products Display Section */}
+        <Row className="mt-4">
+        {loading ? (
+          <Col md={12} className="text-center">
+            <p>Loading products...</p>
+          </Col>
+        ) : error ? (
+          <Col md={12} className="text-center">
+            <p>{error}</p>
+          </Col>
+        ) : (
+          // Ensure products is an array before calling .map()
+          Array.isArray(products) && products.length > 0 ? (
+            products.map((product) => (
+              <Col key={product.id} md={3} className="mb-4">
+                <div className="product-card">
+                  <img
+                    src={product.images} // Make sure product.image is correct
+                    alt={product.name}
+                    className="w-100"
+                  />
+                  <h5>{product.name}</h5>
+                  <p>{product.description}</p>
+                  <Link to={`/product/${product.id}`}>View Product</Link>
+                </div>
+              </Col>
+            ))
+          ) : (
+            <Col md={12} className="text-center">
+              <p>No products available.</p>
+            </Col>
+          )
+        )}
+      </Row>
+      </Container>
+    </div>
+  );
+};
+
+export default HomePage;
