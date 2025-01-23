@@ -49,7 +49,7 @@ const Register = () => {
       console.log('User data being sent to the API:', newUser); 
 
       const response = await fetch(
-        'https://f4b5-2401-4900-1c0e-3b07-fc1a-4d8c-c91a-a8ee.ngrok-free.app/api/users/register',
+        'http://192.168.1.9:3000/api/users/register',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

@@ -5,7 +5,7 @@ import { fetchproductssuccess, fetchproductsfailure } from './productActions';
 // Function to fetch the products using fetch API
 const fetchTheApi = async () => {
   try {
-    const response = await fetch('https://dummyjson.com/products', {
+    const response = await fetch('http://192.168.1.9:3000/api/products/allproducts', {
       method: 'GET',
       headers: {
         'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // Replace with your actual token
@@ -15,7 +15,6 @@ const fetchTheApi = async () => {
        if (!response.ok) {
       throw new Error(`Error ${response.status}: ${response.statusText}`);
     }
-    console.log(response)
     const data = await response.json();
     return data.products;  // Assuming the API response contains a 'products' array
   } catch (error) {
