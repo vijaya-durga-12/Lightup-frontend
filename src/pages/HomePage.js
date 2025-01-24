@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ArrowRight } from '@mui/icons-material';
+import { ArrowRight, ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import { Carousel, Col, Container, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { fetchproductsrequest } from '../features/product/productActions';
@@ -10,52 +10,85 @@ import image3 from '../assets/images/image18.png';
 import image4 from '../assets/images/image17.png';
 import image5 from '../assets/images/image19.png';
 
+// Function to render stars based on rating
+const renderStars = (rating, onClick, productId) => {
+  const stars = [];
+  for (let i = 1; i <= 5; i++) {
+    stars.push(
+      <span
+        key={i}
+        style={{
+          color: i <= rating ? 'gold' : 'gray',
+          fontSize: '1.5rem',
+          cursor: 'pointer',
+        }}
+        onClick={() => onClick(i, productId)} // Trigger rating change
+      >
+        ★
+      </span>
+    );
+  }
+  return stars;
+};
+
 const HomePage = () => {
   const dispatch = useDispatch();
-  const [userResponse, setUserResponse] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(3600); // 1 hour in seconds
+  const [viewAll, setViewAll] = useState(false);
+  const [hoveredCard, setHoveredCard] = useState(null);
+  const [cartItems, setCartItems] = useState([]); // State to manage cart items
+  const [ratings, setRatings] = useState({}); // State to manage ratings for each product
 
-  // Accessing products, loading, and error states from Redux store
   const { products = [], error = null, loading = false } = useSelector((state) => state.product || {});
 
-  // Fetching user data on mount
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await fetch('http://192.168.1.9:3000/api/users/all');
-        const data = await res.json();
-        setUserResponse(data);
-        console.log(data);
-      } catch (err) {
-        console.error('Error fetching users:', err);
-      }
-    };
-    
-    
-    // Fetch products
     dispatch(fetchproductsrequest());
   }, [dispatch]);
-  
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const calculateTimeUnits = (seconds) => {
+    const days = Math.floor(seconds / (3600 * 24));
+    const hours = Math.floor((seconds % (3600 * 24)) / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return { days, hours, minutes, secs };
+  };
+
+  const { days, hours, minutes, secs } = calculateTimeUnits(timeLeft);
+
+  const scrollProducts = (direction) => {
+    const container = document.getElementById('product-scroll-container');
+    const scrollAmount = 300;
+    if (direction === 'left') {
+      container.scrollLeft -= scrollAmount;
+    } else {
+      container.scrollLeft += scrollAmount;
+    }
+  };
+
+  // Add product to cart
+  const addToCart = (product) => {
+    setCartItems((prevCartItems) => [...prevCartItems, product]);
+  };
+
+  // Handle rating change
+  const handleRating = (rating, productId) => {
+    setRatings((prevRatings) => ({ ...prevRatings, [productId]: rating }));
+  };
 
   return (
     <div>
-      {/* Main Content */}
       <Container fluid className="mt-4 mb-4">
         <Row>
-          {/* Left Menu (Categories) */}
           <Col md={3} className="bg-gray-100 p-12">
             <ul className="list-none space-y-2">
-              {/* Category Links */}
-              {[
-                { label: "Women's Fashion", path: '/womens-fashion' },
-                { label: "Men's Fashion", path: '/mens-fashion' },
-                { label: 'Electronics', path: '/electronics' },
-                { label: 'Home & Lifestyle', path: '/home-lifestyle' },
-                { label: 'Medicine', path: '/medicine' },
-                { label: 'Sports & Outdoor', path: '/sports-outdoor' },
-                { label: 'Baby & Toys', path: '/baby-toys' },
-                { label: 'Groceries & Pets', path: '/groceries-pets' },
-                { label: 'Health & Beauty', path: '/health-beauty' },
-              ].map((category, index) => (
+              {[{ label: "Women's Fashion", path: '/womens-fashion' }, { label: "Men's Fashion", path: '/mens-fashion' }, { label: 'Electronics', path: '/electronics' }, { label: 'Home & Lifestyle', path: '/home-lifestyle' }, { label: 'Medicine', path: '/medicine' }, { label: 'Sports & Outdoor', path: '/sports-outdoor' }, { label: 'Baby & Toys', path: '/baby-toys' }, { label: 'Groceries & Pets', path: '/groceries-pets' }, { label: 'Health & Beauty', path: '/health-beauty' }].map((category, index) => (
                 <li key={index}>
                   <Link to={category.path} className="text-dark hover:underline">
                     {category.label} <ArrowRight />
@@ -64,8 +97,6 @@ const HomePage = () => {
               ))}
             </ul>
           </Col>
-
-          {/* Right Section (Carousel) */}
           <Col md={9} className="pr-20">
             <Carousel>
               {[image1, image2, image3, image4, image5].map((image, index) => (
@@ -82,40 +113,202 @@ const HomePage = () => {
           </Col>
         </Row>
 
-        {/* Products Display Section */}
-        <Row className="mt-4">
-          {loading ? (
-            <Col md={12} className="text-center">
-              <p>Loading products...</p>
+        {/* Flash Sale Section */}
+        <Container fluid className="mt-4">
+          <Row className="align-items-center">
+            <Col md={3}>
+              <h1 className="text-left " style={{ color: 'red', fontSize: '30px' }}><b>Flash Sale</b></h1>
             </Col>
-          ) : error ? (
-            <Col md={12} className="text-center">
-              <p>{error}</p>
+            <Col md={6} className="text-center">
+              <div className="d-flex justify-content-center">
+                {[{ value: days, label: 'Days' }, { value: hours, label: 'Hours' }, { value: minutes, label: 'Minutes' }, { value: secs, label: 'Seconds' }].map((unit, index) => (
+                  <div key={index} className="mx-2 text-center">
+                    <div style={{ fontSize: '1rem', fontWeight: '500', color: '#555' }}>
+                      {unit.label}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: '2rem',
+                        fontWeight: 'bold',
+                        color: '#d9534f',
+                      }}
+                    >
+                      {unit.value < 10 ? `0${unit.value}` : unit.value}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </Col>
-          ) : products.length > 0 ? (
-            products.map((product) => (
-              <Col key={product.id} md={3} className="mb-4">
-                <div className="product-card">
-                  <img
-                    src={product.image_url} // Ensure the correct image URL path
-                    alt={product.name}
-                    className="w-100"
-                  />
-                  <h5>{product.name}</h5>
-                  <p>{product.description}</p>
-                  <p>Price: ₹{product.price}</p> {/* Display product price */}
-                  <Link to={`/product/${product.id}`} className="btn btn-primary">
-                    View Product
-                  </Link>
-                </div>
-              </Col>
-            ))
-          ) : (
-            <Col md={12} className="text-center">
-              <p>No products available.</p>
+
+            <Col md={3} className="text-right">
+              <button className="btn btn-light mx-2" onClick={() => scrollProducts('left')}>
+                <ArrowBackIos />
+              </button>
+              <button className="btn btn-light mx-2" onClick={() => scrollProducts('right')}>
+                <ArrowForwardIos />
+              </button>
             </Col>
+          </Row>
+        </Container>
+
+        {/* Product Cards Section */}
+        <Container fluid className="mt-4 mb-4">
+          <Row>
+            <Col md={12} className="position-relative">
+              <div
+                id="product-scroll-container"
+                className="d-flex overflow-auto"
+                style={{
+                  scrollBehavior: 'smooth',
+                  whiteSpace: 'nowrap',
+                  padding: '0 50px',
+                }}
+              >
+                {loading ? (
+                  <div className="text-center w-100">Loading products...</div>
+                ) : error ? (
+                  <div className="text-center w-100">{error}</div>
+                ) : products.length > 0 ? (
+                  products.map((product) => (
+                    <div
+                      key={product.id}
+                      className="card m-2 col-lg-3"
+                      style={{
+                        height: '400px',
+                        width: 'auto',
+                        borderRadius: '10px',
+                        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+                        position: 'relative',
+                      }}
+                      onMouseEnter={() => setHoveredCard(product.id)}
+                      onMouseLeave={() => setHoveredCard(null)}
+                    >
+                     
+
+                      {/* Image Section */}
+                      <img
+                        src={product.image_url}
+                        alt={product.name}
+                        className="card-img-top"
+                        
+                        style={{
+                          width: "auto",
+                          height: '200px',
+                          borderTopLeftRadius: '10px',
+                          borderTopRightRadius: '10px',
+                        }}
+                      /> {/* Add to Cart Button Above Image */}
+                      <div
+                        className="add-to-cart-btn"
+                        style={{
+                          position: 'relative',
+                          top: '0', // Position at the top of the card
+                          left: '0',
+                          width: '100%',
+                          backgroundColor: 'black',
+                          color: 'white',
+                          textAlign: 'center',
+                          padding: '10px 0',
+                          display: hoveredCard === product.id ? 'block' : 'none',
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => addToCart(product)}
+                      >
+                        Add to Cart
+                      </div>
+
+                      <div className="card-body">
+                        <h5 className="card-title">{product.name}</h5>
+                        <p className="card-text">{product.description}</p>
+                        <p className="card-text">
+                          <strong>Price:</strong> ₹{product.price}
+                        </p>
+
+                        {/* Rating Section */}
+                        <div className="d-flex justify-content-start">
+                          {renderStars(ratings[product.id] || 0, handleRating, product.id)}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center w-100">No products availablehere.</div>
+                )}
+              </div>
+            </Col>
+          </Row>
+
+          {/* View All Button */}
+          <Row className="mt-4">
+            <Col md={12} className="text-center">
+              <button className="btn btn-danger" onClick={() => setViewAll((prev) => !prev)}>
+                {viewAll ? 'Show Less' : 'View All Products'}
+              </button>
+            </Col>
+          </Row>
+
+          {/* Grid View Section */}
+          {viewAll && (
+            <Row className="mt-4">
+              {products.map((product) => (
+                <Col key={product.id} md={3} className="mb-4">
+                  <div
+                    className="card"
+                    style={{
+                      borderRadius: '10px',
+                      boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+                      padding: '10px',
+                      position: 'relative',
+                    }}
+                    onMouseEnter={() => setHoveredCard(product.id)}
+                    onMouseLeave={() => setHoveredCard(null)}
+                  >
+                    
+                    {/* Image Section */}
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      className="card-img-top"
+                      style={{
+                        height: '200px',
+                        borderTopLeftRadius: '10px',
+                        borderTopRightRadius: '10px',
+                      }}
+                    />
+                    {/* Add to Cart Button Above Image */}
+                    <div
+                      className="add-to-cart-btn"
+                      style={{
+                        position:'relative',
+                        top: '0', // Position at the top of the card
+                        left: '0',
+                        width: '100%',
+                        backgroundColor: 'black',
+                        color: 'white',
+                        textAlign: 'center',
+                        padding: '10px 0',
+                        display: hoveredCard === product.id ? 'block' : 'none',
+                        cursor: 'pointer',
+                      }}
+                      onClick={() => addToCart(product)}
+                    >
+                      Add to Cart
+                    </div>
+                    <div className="card-body">
+                      <h5 className="card-title">{product.name}</h5>
+                      <p className="card-text">Price: ₹{product.price}</p>
+
+                      {/* Rating Section */}
+                      <div className="d-flex justify-content-start">
+                        {renderStars(ratings[product.id] || 0, handleRating, product.id)}
+                      </div>
+                    </div>
+                  </div>
+                </Col>
+              ))}
+            </Row>
           )}
-        </Row>
+        </Container>
       </Container>
     </div>
   );
