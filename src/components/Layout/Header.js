@@ -1,17 +1,29 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Navbar, Nav, Form, Container } from "react-bootstrap";
 import { Outlet, Link, useLocation } from "react-router-dom";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import SearchIcon from '@mui/icons-material/Search';
 import Footer from "./Footer";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchproductsrequest } from "../../features/product/productActions";
+
 
 const Header = () => {
+  const dispatch=useDispatch()
+  const { data=[] } = useSelector((state) => state.users); 
+  console.log(data)
+  
+
+  
   const location = useLocation();
 
   // Check if the current page is '/login' to hide the icons
   const isAuthPage = location.pathname === '/login'||location.pathname==='/signup'
-  
+  useEffect(()=>{
+    dispatch(fetchproductsrequest())
+
+  },[dispatch])
   return (
     <div>
       {/* Announcement Bar */}
@@ -52,7 +64,10 @@ const Header = () => {
                 Contact
               </Nav.Link>
               <Nav.Link as={Link} to="/signup" className="text-dark">
-                Sign Up
+              <p>Signup{data.email}</p>
+              <p>Logout</p>
+
+
               </Nav.Link>
             </Nav>
             <Form className="d-flex position-relative me-3">
@@ -76,10 +91,10 @@ const Header = () => {
         </Container>
       </Navbar>
 
-      {/* Outlet for rendering child routes */}
+    
       <Outlet />
       
-      {/* Footer */}
+      
       <Footer />
     </div>
   );
