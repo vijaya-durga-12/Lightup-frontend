@@ -1,27 +1,21 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import Login from '../Login'; // Adjust path accordingly
-import { fetchadmindata } from '../../features/admin/adminActions';
-const adminData=require('dotenv').config('../env')
+import React from 'react'
 
 const AdminLoginPage = () => {
-  const dispatch = useDispatch();
 
-  const admin_email=process.env.ADMIN_ID
-  console.log(admin_email)
-  const admin_password=process.env.ADMIN_PASSWORD
- 
+    const admin_email=Process.env.ADMIN_ID;
+    const admin_password=Process.env.ADMIN_PASSWORD;
 
-  // Dispatch action to load admin credentials
-  useEffect(() => {
-    dispatch(fetchadmindata(admin_email,admin_password) );
-  }, [dispatch]);
-
+    if(email===admin_email && password===admin_password){
+        alert("Admin logged in successfully");
+        navigate("/")
+        return
+       }
+    
   return (
     <div>
-      <Login/>
-    </div>
-  );
-};
 
-export default AdminLoginPage;
+    </div>
+  )
+}
+
+export default AdminLoginPage
