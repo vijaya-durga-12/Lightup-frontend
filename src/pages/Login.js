@@ -1,24 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { Container, Row, Col } from "react-bootstrap";
-import sideImage from "../../src/assets/images/cart.jpg";
-import { Link, useNavigate } from "react-router-dom";
-import { fetchusersrequest } from "../features/user/userActions";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchadmindata } from "../features/admin/adminActions";
+import React, { useEffect, useState } from 'react';
+import { Container, Row, Col } from 'react-bootstrap';
+import sideImage from '../../src/assets/images/cart.jpg';
+import { Link, useNavigate } from 'react-router-dom';
+import { fetchusersrequest } from '../features/user/userActions';
+import { useDispatch, useSelector } from 'react-redux';
 
-const Login = ({ isAdmin = false}) => {
-  console.log("isAdmin:", isAdmin);
-  const dispatch = useDispatch();
-  const { users = [], error = null } = useSelector((state) => state.users);
-  const navigate = useNavigate();
-  const {data=[]} = useSelector((state) => state.admin);
-  console.log(data)
+const Login = () => {
+  const dispatch=useDispatch()
+  const { users = [], error = null } = useSelector((state) => state.users); 
+  const navigate=useNavigate();
 
-
+  
   useEffect(() => {
     console.log("Users from Redux on Component Render:", users);
   }, [users]);
-
+  
   const [login, setLogin] = useState({
     email: "",
     password: "",
@@ -29,39 +25,29 @@ const Login = ({ isAdmin = false}) => {
     await setLogin({ ...login, [e.target.name]: e.target.value });
   };
 
-  useEffect(() => {
-    dispatch(fetchusersrequest());
-  }, [dispatch]);
+  useEffect(()=>{    dispatch(fetchusersrequest());
+  },[dispatch])
 
-  useEffect(()=>{
-    dispatch(fetchadmindata())
-  },[])
+
+
   const sub = (e) => {
     e.preventDefault();
-  
-    if (isAdmin) {
-      // Validate admin credentials
-      if (login.email === data.email && login.password === data.password) {
-        alert("Admin login successful!");
-        navigate("/adminheader");
-      } else {
-        alert("Invalid admin credentials");
-      }
+    console.log("Login form submitted:", login);
+     // Dispatch action to fetch users
+
+
+    // Validate credentials
+    const matchingUser = users.find(
+      (user) => user.email === login.email && user.password === login.password
+    );
+
+    if (matchingUser) {
+      alert("Login successful:", matchingUser);
+      navigate('/');
     } else {
-      // Validate user credentials
-      const matchingUser = users.find(
-        (user) => user.email === login.email && user.password === login.password
-      );
-  
-      if (matchingUser) {
-        alert("User login successful!");
-        navigate("/");
-      } else {
-        alert("Invalid user credentials");
-      }
+      console.log("Login failed:", error || "Invalid email or password");
     }
   };
-  
 
   return (
     <div>
