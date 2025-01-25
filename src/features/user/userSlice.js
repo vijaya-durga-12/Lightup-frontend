@@ -4,7 +4,6 @@ const initialState = {
 };
 
 const userReducer = (state = initialState, action) => {
-  console.log("Reducer Action:", action); // Log actions for debugging
   switch (action.type) {
     case 'FETCH_USERS_REQUEST':
       return { ...state, error: null };
