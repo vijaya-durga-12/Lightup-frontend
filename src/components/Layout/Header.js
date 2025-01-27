@@ -31,14 +31,18 @@ const Header = () => {
 
   return (
     <div>
-      {/* Announcement Bar */}
+
+        {/* Announcement Bar */}
+      
+      {
       <div className="bg-black text-white py-2 d-flex justify-content-between align-items-center px-3">
+
         <div className="text-center flex-grow-1">
           <span>Summer Sale For All Swim Suits And Free Express Delivery - OFF 50%! </span>
           <a
             href="https://example.com"
             className="text-decoration-underline text-white ms-2"
-          >
+            >
             Shop Now
           </a>
         </div>
@@ -49,6 +53,7 @@ const Header = () => {
           </select>
         </div>
       </div>
+          }
 
       {/* Navbar */}
       <Navbar bg="white" expand="lg" className="shadow-sm">

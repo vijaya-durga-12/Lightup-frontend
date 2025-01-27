@@ -5,19 +5,21 @@ import { MdPhoneIphone } from "react-icons/md";
 import { RiComputerLine } from "react-icons/ri";
 import { BsSmartwatch } from "react-icons/bs";
 import { CiCamera } from "react-icons/ci";
+import { GiLighter } from "react-icons/gi";
+
 import { IoHeadsetOutline, IoGameControllerOutline } from "react-icons/io5";
 
 const ProductCategory = () => {
   const { products = [], error = null, loading = false } = useSelector((state) => state.products || {});
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [activeCategory, setActiveCategory] = useState(null); // Track the active category
+  const [activeCategory, setActiveCategory] = useState(null); 
 
   const categoryCardClick = (categoryid) => {
     const filtered = products.filter(
       (product) => String(product.category_id) === String(categoryid)
     );
     setFilteredProducts(filtered);
-    setActiveCategory(categoryid); // Set the active category ID
+    setActiveCategory(categoryid);
   };
 
   const categories = [
@@ -29,7 +31,7 @@ const ProductCategory = () => {
     {
       categoryicon: <RiComputerLine />,
       context: "Computer",
-      categoryid: "",
+      categoryid: "1",
     },
     {
       categoryicon: <BsSmartwatch />,
@@ -47,9 +49,10 @@ const ProductCategory = () => {
       categoryid: "6",
     },
     {
-      categoryicon: <IoGameControllerOutline />,
-      context: "Games",
-      categoryid: "1",
+      categoryicon:<GiLighter />
+      ,
+      context: "Lighter",
+      categoryid: "4",
     },
   ];
 
@@ -67,15 +70,15 @@ const ProductCategory = () => {
               }}
             >
               {categories.map((category, index) => (
-                <div
+                <Col
+                  xs={6} sm={4} md={3} lg={2}
                   key={index}
                   style={{
-                    padding: "20px",
+                    padding: "10px",
                     borderWidth: "2px",
+                  width:"200px",
                     borderStyle: "solid",
-                    width: "200px",
-                    height: "100px",
-                    background: activeCategory === category.categoryid ? "red" : "white", // Change background color
+                    background: activeCategory === category.categoryid ? "red" : "white", 
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
@@ -95,19 +98,21 @@ const ProductCategory = () => {
                     {category.categoryicon}
                   </span>
                   <p style={{ margin: 0 }}>{category.context}</p>
-                </div>
+                </Col>
               ))}
             </div>
           </Col>
         </Row>
+
         <br />
+
         <Row>
           <Col>
             {filteredProducts.length > 0 ? (
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
                   gap: "10px",
                 }}
               >
@@ -134,7 +139,7 @@ const ProductCategory = () => {
                     />
                     <h5>{product.name}</h5>
                     <p>Price: ${product.price}</p>
-                    <p>Category ID: {product.category_id}</p>
+                    
                   </div>
                 ))}
               </div>
