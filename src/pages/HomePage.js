@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowRight, ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import { Carousel, Col, Container, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import ProductCategory from '../features/product/productCategory';
 import { fetchproductsrequest, setSelectedProduct } from '../features/product/productActions';
 import image1 from '../assets/images/image12.jpg';
 import image2 from '../assets/images/image16.png';
@@ -32,6 +33,8 @@ const renderStars = (rating, onClick, productId) => {
 };
 
 const HomePage = () => {
+  const { products = [], error = null, loading = false } = useSelector((state) => state.products || {});
+    console.log(products)
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState(3600); // 1 hour in seconds
@@ -40,8 +43,9 @@ const HomePage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [ratings, setRatings] = useState({});
 
-  const { products = [], error = null, loading = false } = useSelector((state) => state.products || {});
-
+  
+  
+    
   useEffect(() => {
     dispatch(fetchproductsrequest());
   }, [dispatch]);
@@ -300,7 +304,12 @@ const HomePage = () => {
           )}
         </Container>
       </Container>
-    </div>
+      <div>        
+      </div>
+      <h2 style={{color:"red",fontSize:"20px",fontStyle:"bold",padding:"40px"}}>ProductCategory</h2>
+      <ProductCategory />
+      <br></br>
+          </div>
   );
 };
 

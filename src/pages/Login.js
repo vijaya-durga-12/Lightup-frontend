@@ -4,7 +4,7 @@ import sideImage from '../../src/assets/images/cart.jpg';
 import { Link, useNavigate } from 'react-router-dom';
 import { fetchusersrequest } from '../features/user/userActions';
 import { useDispatch, useSelector } from 'react-redux';
-
+import { userlogindata } from '../features/user/userActions';
 const Login = () => {
   const dispatch=useDispatch()
   const { users = [], error = null } = useSelector((state) => state.users); 
@@ -27,11 +27,10 @@ const Login = () => {
 
   useEffect(()=>{    dispatch(fetchusersrequest());
   },[dispatch])
-
-
-
+  
   const sub = (e) => {
     e.preventDefault();
+
     console.log("Login form submitted:", login);
      // Dispatch action to fetch users
 
@@ -40,9 +39,12 @@ const Login = () => {
     const matchingUser = users.find(
       (user) => user.email === login.email && user.password === login.password
     );
-
+    
     if (matchingUser) {
+
       alert("Login successful:", matchingUser);
+      dispatch(userlogindata(login))
+      
       navigate('/');
     } else {
       console.log("Login failed:", error || "Invalid email or password");

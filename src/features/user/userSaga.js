@@ -18,10 +18,8 @@ const fetchapi = async () => {
 function* usersSaga() {
     try {
       const users = yield call(fetchapi);
-      console.log("Fetched Users in Saga:", users);
       yield put(fetchUserssuccess(users)); 
     } catch (error) {
-      console.error("Error in Saga:", error.message); 
       yield put(fetchusersfailuer(error.message));
     }
   }
