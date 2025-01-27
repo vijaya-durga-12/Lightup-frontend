@@ -3,7 +3,7 @@ import productReducer from '../features/product/productSlice'; // Import product
 
 import userReducer from '../features/user/userSlice';
 const rootReducer = combineReducers({
-  product: productReducer,
+  products: productReducer,
   users:userReducer
 });
 

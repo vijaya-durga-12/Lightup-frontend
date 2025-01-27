@@ -1,6 +1,6 @@
 import { takeEvery, call, put } from 'redux-saga/effects';
-import { FETCH_PRODUCTS_REQUEST } from './productActions';
-import { fetchproductssuccess, fetchproductsfailure } from './productActions';
+import { FETCH_PRODUCTS_REQUEST } from '../product/productActions';
+import { fetchproductssuccess, fetchproductsfailure } from '../product/productActions';
 
 // Function to fetch the products using fetch API
 const fetchTheApi = async () => {

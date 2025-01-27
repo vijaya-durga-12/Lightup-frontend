@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { ArrowRight, ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import { Carousel, Col, Container, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { fetchproductsrequest } from '../features/product/productActions';
+import ProductCategory from '../features/product/productCategory';
+import { fetchproductsrequest, setSelectedProduct } from '../features/product/productActions';
 import image1 from '../assets/images/image12.jpg';
 import image2 from '../assets/images/image16.png';
 import image3 from '../assets/images/image18.png';
 import image4 from '../assets/images/image17.png';
 import image5 from '../assets/images/image19.png';
 
-// Function to render stars based on rating
 const renderStars = (rating, onClick, productId) => {
   const stars = [];
   for (let i = 1; i <= 5; i++) {
@@ -22,7 +23,7 @@ const renderStars = (rating, onClick, productId) => {
           fontSize: '1.5rem',
           cursor: 'pointer',
         }}
-        onClick={() => onClick(i, productId)} // Trigger rating change
+        onClick={() => onClick(i, productId)}
       >
         ★
       </span>
@@ -32,15 +33,19 @@ const renderStars = (rating, onClick, productId) => {
 };
 
 const HomePage = () => {
+  const { products = [], error = null, loading = false } = useSelector((state) => state.products || {});
+    console.log(products)
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState(3600); // 1 hour in seconds
   const [viewAll, setViewAll] = useState(false);
   const [hoveredCard, setHoveredCard] = useState(null);
-  const [cartItems, setCartItems] = useState([]); // State to manage cart items
-  const [ratings, setRatings] = useState({}); // State to manage ratings for each product
+  const [cartItems, setCartItems] = useState([]);
+  const [ratings, setRatings] = useState({});
 
-  const { products = [], error = null, loading = false } = useSelector((state) => state.product || {});
-console.log(products)
+  
+  
+    
   useEffect(() => {
     dispatch(fetchproductsrequest());
   }, [dispatch]);
@@ -72,14 +77,20 @@ console.log(products)
     }
   };
 
-  // Add product to cart
   const addToCart = (product) => {
     setCartItems((prevCartItems) => [...prevCartItems, product]);
   };
 
-  // Handle rating change
   const handleRating = (rating, productId) => {
     setRatings((prevRatings) => ({ ...prevRatings, [productId]: rating }));
+  };
+
+  const handleCardClick = (productId, product) => {
+    console.log(product); // Debugging: Check if product is being passed correctly
+    dispatch(setSelectedProduct(product)); // Pass the full product object
+    
+    // Navigate to the product detail page
+    navigate('/productpage');
   };
 
   return (
@@ -88,7 +99,15 @@ console.log(products)
         <Row>
           <Col md={3} className="bg-gray-100 p-12">
             <ul className="list-none space-y-2">
-              {[{ label: "Women's Fashion", path: '/womens-fashion' }, { label: "Men's Fashion", path: '/mens-fashion' }, { label: 'Electronics', path: '/electronics' }, { label: 'Home & Lifestyle', path: '/home-lifestyle' }, { label: 'Medicine', path: '/medicine' }, { label: 'Sports & Outdoor', path: '/sports-outdoor' }, { label: 'Baby & Toys', path: '/baby-toys' }, { label: 'Groceries & Pets', path: '/groceries-pets' }, { label: 'Health & Beauty', path: '/health-beauty' }].map((category, index) => (
+              {[{ label: "Women's Fashion", path: '/womens-fashion' },
+                { label: "Men's Fashion", path: '/mens-fashion' },
+                { label: 'Electronics', path: '/electronics' },
+                { label: 'Home & Lifestyle', path: '/home-lifestyle' },
+                { label: 'Medicine', path: '/medicine' },
+                { label: 'Sports & Outdoor', path: '/sports-outdoor' },
+                { label: 'Baby & Toys', path: '/baby-toys' },
+                { label: 'Groceries & Pets', path: '/groceries-pets' },
+                { label: 'Health & Beauty', path: '/health-beauty' }].map((category, index) => (
                 <li key={index}>
                   <Link to={category.path} className="text-dark hover:underline">
                     {category.label} <ArrowRight />
@@ -113,33 +132,26 @@ console.log(products)
           </Col>
         </Row>
 
-        {/* Flash Sale Section */}
         <Container fluid className="mt-4">
           <Row className="align-items-center">
             <Col md={3}>
-              <h1 className="text-left " style={{ color: 'red', fontSize: '30px' }}><b>Flash Sale</b></h1>
+              <h1 className="text-left" style={{ color: 'red', fontSize: '30px' }}>
+                <b>Flash Sale</b>
+              </h1>
             </Col>
             <Col md={6} className="text-center">
               <div className="d-flex justify-content-center">
-                {[{ value: days, label: 'Days' }, { value: hours, label: 'Hours' }, { value: minutes, label: 'Minutes' }, { value: secs, label: 'Seconds' }].map((unit, index) => (
+                {[{ value: days, label: 'Days' }, { value: hours, label: 'Hours' },
+                  { value: minutes, label: 'Minutes' }, { value: secs, label: 'Seconds' }].map((unit, index) => (
                   <div key={index} className="mx-2 text-center">
-                    <div style={{ fontSize: '1rem', fontWeight: '500', color: '#555' }}>
-                      {unit.label}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: '2rem',
-                        fontWeight: 'bold',
-                        color: '#d9534f',
-                      }}
-                    >
+                    <div style={{ fontSize: '1rem', fontWeight: '500', color: '#555' }}>{unit.label}</div>
+                    <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#d9534f' }}>
                       {unit.value < 10 ? `0${unit.value}` : unit.value}
                     </div>
                   </div>
                 ))}
               </div>
             </Col>
-
             <Col md={3} className="text-right">
               <button className="btn btn-light mx-2" onClick={() => scrollProducts('left')}>
                 <ArrowBackIos />
@@ -151,18 +163,14 @@ console.log(products)
           </Row>
         </Container>
 
-        {/* Product Cards Section */}
-        <Container fluid className="mt-4 mb-4">
+        <Container fluid className="mt-4 mb-4 ">
           <Row>
-            <Col md={12} className="position-relative">
+            <Col md={12} className="position-relative ">
               <div
+              
                 id="product-scroll-container"
-                className="d-flex overflow-auto"
-                style={{
-                  scrollBehavior: 'smooth',
-                  whiteSpace: 'nowrap',
-                  padding: '0 50px',
-                }}
+                className="d-flex overflow-auto "
+                style={{ scrollBehavior: 'smooth', whiteSpace: 'nowrap', padding: '0 50px' }}
               >
                 {loading ? (
                   <div className="text-center w-100">Loading products...</div>
@@ -171,74 +179,66 @@ console.log(products)
                 ) : products.length > 0 ? (
                   products.map((product) => (
                     <div
-                      key={product.id}
-                      className="card m-2 col-lg-3"
-                      style={{
-                        height: '400px',
-                        width: 'auto',
-                        borderRadius: '10px',
-                        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
-                        position: 'relative',
-                      }}
-                      onMouseEnter={() => setHoveredCard(product.id)}
-                      onMouseLeave={() => setHoveredCard(null)}
-                    >
-                     
+  key={product.id}
+  className="card m-2 col-lg-3 col-md-4 col-sm-12 col-xs-12 col-xm-12"
+  style={{
+    height: '400px',
+    width: 'auto',
+    borderRadius: '10px',
+    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+    position: 'relative',
+  }}
+  onMouseEnter={() => setHoveredCard(product.id)}
+  onMouseLeave={() => setHoveredCard(null)}
+  onClick={() => handleCardClick(product.id, product)} // Pass the entire product object
+>
+  <img
+    src={product.image_url}
+    alt={product.name}
+    className="card-img-top"
+    style={{ width: 'auto', height: '200px', borderTopLeftRadius: '10px', borderTopRightRadius: '10px' }}
+  />
+  <div
+    className="add-to-cart-btn"
+    style={{
+      position: 'absolute',
+      top: '0',
+      left: '0',
+      width: '100%',
+      backgroundColor: 'black',
+      color: 'white',
+      textAlign: 'center',
+      padding: '10px 0',
+      display: hoveredCard === product.id ? 'block' : 'none',
+      cursor: 'pointer',
+    }}
+    onClick={(e) => {
+      e.stopPropagation(); // Prevent card click navigation
+      addToCart(product);
+    }}
+  >
+    Add to Cart
+  </div>
+  <div className="card-body">
+    <h5 className="card-title">{product.name}</h5>
+    <p className="card-text">{product.description}</p>
+    <p className="card-text">
+      <strong>Price:</strong> ₹{product.price}
+    </p>
+    <div className="d-flex justify-content-start">
+      {renderStars(ratings[product.id] || 0, handleRating, product.id)}
+    </div>
+  </div>
+</div>
 
-                      {/* Image Section */}
-                      <img
-                        src={product.image_url}
-                        alt={product.name}
-                        className="card-img-top"
-                        
-                        style={{
-                          width: "auto",
-                          height: '200px',
-                          borderTopLeftRadius: '10px',
-                          borderTopRightRadius: '10px',
-                        }}
-                      /> {/* Add to Cart Button Above Image */}
-                      <div
-                        className="add-to-cart-btn"
-                        style={{
-                          position: 'relative',
-                          top: '0', // Position at the top of the card
-                          left: '0',
-                          width: '100%',
-                          backgroundColor: 'black',
-                          color: 'white',
-                          textAlign: 'center',
-                          padding: '10px 0',
-                          display: hoveredCard === product.id ? 'block' : 'none',
-                          cursor: 'pointer',
-                        }}
-                        onClick={() => addToCart(product)}
-                      >
-                        Add to Cart
-                      </div>
-
-                      <div className="card-body">
-                        <h5 className="card-title">{product.name}</h5>
-                        <p className="card-text">{product.description}</p>
-                        <p className="card-text">
-                          <strong>Price:</strong> ₹{product.price}
-                        </p>
-
-                        {/* Rating Section */}
-                        <div className="d-flex justify-content-start">
-                          {renderStars(ratings[product.id] || 0, handleRating, product.id)}
-                        </div>
-                      </div>
-                    </div>
                   ))
                 ) : (
-                  <div className="text-center w-100">No products availablehere.</div>
+                  <div className="text-center w-100">No products available.</div>
                 )}
               </div>
             </Col>
           </Row>
 
-          {/* View All Button */}
           <Row className="mt-4">
             <Col md={12} className="text-center">
               <button className="btn btn-danger" onClick={() => setViewAll((prev) => !prev)}>
@@ -247,9 +247,8 @@ console.log(products)
             </Col>
           </Row>
 
-          {/* Grid View Section */}
           {viewAll && (
-            <Row className="mt-4">
+            <Row className="mt-4 col-lg-12 col-md-6">
               {products.map((product) => (
                 <Col key={product.id} md={3} className="mb-4">
                   <div
@@ -262,25 +261,19 @@ console.log(products)
                     }}
                     onMouseEnter={() => setHoveredCard(product.id)}
                     onMouseLeave={() => setHoveredCard(null)}
+                    onClick={() => handleCardClick(product.id, product)} 
                   >
-                    
-                    {/* Image Section */}
                     <img
                       src={product.image_url}
                       alt={product.name}
                       className="card-img-top"
-                      style={{
-                        height: '200px',
-                        borderTopLeftRadius: '10px',
-                        borderTopRightRadius: '10px',
-                      }}
+                      style={{ height: '200px', borderTopLeftRadius: '10px', borderTopRightRadius: '10px' }}
                     />
-                    {/* Add to Cart Button Above Image */}
                     <div
                       className="add-to-cart-btn"
                       style={{
-                        position:'relative',
-                        top: '0', // Position at the top of the card
+                        position: 'absolute',
+                        top: '0',
                         left: '0',
                         width: '100%',
                         backgroundColor: 'black',
@@ -290,15 +283,16 @@ console.log(products)
                         display: hoveredCard === product.id ? 'block' : 'none',
                         cursor: 'pointer',
                       }}
-                      onClick={() => addToCart(product)}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent card click navigation
+                        addToCart(product);
+                      }}
                     >
                       Add to Cart
                     </div>
                     <div className="card-body">
                       <h5 className="card-title">{product.name}</h5>
                       <p className="card-text">Price: ₹{product.price}</p>
-
-                      {/* Rating Section */}
                       <div className="d-flex justify-content-start">
                         {renderStars(ratings[product.id] || 0, handleRating, product.id)}
                       </div>
@@ -310,10 +304,12 @@ console.log(products)
           )}
         </Container>
       </Container>
-      <div>
-        
+      <div>        
       </div>
-    </div>
+      <h2 style={{color:"red",fontSize:"20px",fontStyle:"bold",padding:"40px"}}>ProductCategory</h2>
+      <ProductCategory />
+      <br></br>
+          </div>
   );
 };
 
