@@ -306,7 +306,7 @@ const HomePage = () => {
       </Container>
       <div>        
       </div>
-      <h2 style={{color:"red",fontSize:"20px",fontStyle:"bold",padding:"40px"}}>ProductCategory</h2>
+      
       <ProductCategory />
       <br></br>
           </div>
