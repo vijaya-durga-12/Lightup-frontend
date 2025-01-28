@@ -1,19 +1,30 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Container, Row, Col } from "react-bootstrap";
-import { MdPhoneIphone } from "react-icons/md";
-import { RiComputerLine } from "react-icons/ri";
+import { IoBagOutline } from "react-icons/io5";
+import { IoIosDesktop } from "react-icons/io";
+import { IoBookOutline } from "react-icons/io5";
 import { BsSmartwatch } from "react-icons/bs";
 import { CiCamera } from "react-icons/ci";
 import { GiLighter } from "react-icons/gi";
+import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
+import { IoHeadsetOutline } from "react-icons/io5";
 
-import { IoHeadsetOutline, IoGameControllerOutline } from "react-icons/io5";
+import { IoGiftOutline } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
+import { setSelectedProduct } from "./productActions";
+import { CiMobile4 } from "react-icons/ci";
+
 
 const ProductCategory = () => {
   const { products = [], error = null, loading = false } = useSelector((state) => state.products || {});
+  const dispatch =useDispatch()
+  const navigate=useNavigate()
+  
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [activeCategory, setActiveCategory] = useState(null); 
-
+  const [activeCategory, setActiveCategory] = useState(null);
+ const [hoveredCard, setHoveredCard] = useState(null);
+  const [cartItems, setCartItems] = useState([]);
   const categoryCardClick = (categoryid) => {
     const filtered = products.filter(
       (product) => String(product.category_id) === String(categoryid)
@@ -22,75 +33,95 @@ const ProductCategory = () => {
     setActiveCategory(categoryid);
   };
 
+  const scrollCategory = (direction) => {
+    const container = document.getElementById("scroll-category-product");
+    const scrollAmount = 300;
+    if (direction === "left") {
+      container.scrollLeft -= scrollAmount; // Scroll left
+    } else if (direction === "right") {
+      container.scrollLeft += scrollAmount; // Scroll right
+    }
+  };
+  const handleCardClick = (productId, product) => {
+      console.log(product); 
+      dispatch(setSelectedProduct(product));   
+      navigate('/productpage');
+    };
+
   const categories = [
-    {
-      categoryicon: <MdPhoneIphone />,
-      context: "Phone",
-      categoryid: "2",
-    },
-    {
-      categoryicon: <RiComputerLine />,
-      context: "Computer",
-      categoryid: "1",
-    },
-    {
-      categoryicon: <BsSmartwatch />,
-      context: "Smartwatch",
-      categoryid: "5",
-    },
-    {
-      categoryicon: <CiCamera />,
-      context: "Camera",
-      categoryid: "3",
-    },
-    {
-      categoryicon: <IoHeadsetOutline />,
-      context: "Headphone",
-      categoryid: "6",
-    },
-    {
-      categoryicon:<GiLighter />
-      ,
-      context: "Lighter",
-      categoryid: "4",
-    },
+    { categoryicon: <CiMobile4 /> , context: "Phone", categoryid: "2" },
+    { categoryicon: <IoIosDesktop />
+      , context: "Computer", categoryid: "1" },
+    { categoryicon: <BsSmartwatch />, context: "Smartwatch", categoryid: "5" },
+    { categoryicon: <CiCamera />, context: "Camera", categoryid: "3" },
+    { categoryicon: <IoHeadsetOutline />, context: "Headphone", categoryid: "6" },
+    { categoryicon: <GiLighter />,context: "Lighter", categoryid: "4" },
+    { categoryicon: <IoBagOutline />,context: "Handbag", categoryid: "7" },
+    { categoryicon: <IoBookOutline />,context: "Books", categoryid: "8" },
+    { categoryicon: <IoGiftOutline /> , context: "Gifts", categoryid: "9" },   
+    
   ];
 
   return (
     <div>
+      <hr></hr>
+<div className="d-flex justify-content-between align-items-center "style={{paddingLeft:"3%"}}>
+  <div>
+  <h2 style={{ color: 'red', fontSize: '30px' }}>Product Category</h2>
+  </div>
+  <div>
+
+  <button className="btn btn-light" onClick={() => scrollCategory("left")}>
+    <ArrowBackIos />
+  </button>
+  
+  <button className="btn btn-light" onClick={() => scrollCategory("right")}>
+    <ArrowForwardIos />
+  </button>
+  </div>
+</div>
+
+<br />
       <Container>
         <Row>
           <Col>
+
             <div
+              id="scroll-category-product"
+              className="d-flex overflow-auto "
               style={{
                 display: "flex",
-                flexWrap: "wrap",
                 gap: "10px",
-                justifyContent: "center",
+                
+                justifyContent: "flex-start",                 
+                scrollBehavior: 'smooth',
+                padding: '0 20px',
+                whiteSpace: 'nowrap', 
               }}
             >
               {categories.map((category, index) => (
-                <Col
-                  xs={6} sm={4} md={3} lg={2}
+                <div
                   key={index}
                   style={{
-                    padding: "10px",
+                    padding: "5%",
                     borderWidth: "2px",
-                  width:"200px",
+                    
+                 
+                  width:"10000px",
                     borderStyle: "solid",
-                    background: activeCategory === category.categoryid ? "red" : "white", 
+                    background: activeCategory === category.categoryid ? "#a4a7ab" : "white",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
                     justifyContent: "center",
                     cursor: "pointer",
-                    transition: "background 0.3s ease",
+                    
                   }}
                   onClick={() => categoryCardClick(category.categoryid)}
                 >
                   <span
                     style={{
-                      fontSize: "40px",
+                      fontSize: "50px",
                       display: "block",
                       padding: "10px",
                     }}
@@ -98,12 +129,13 @@ const ProductCategory = () => {
                     {category.categoryicon}
                   </span>
                   <p style={{ margin: 0 }}>{category.context}</p>
-                </Col>
+                </div>
               ))}
             </div>
           </Col>
         </Row>
 
+        <br />
         <br />
 
         <Row>
@@ -119,12 +151,16 @@ const ProductCategory = () => {
                 {filteredProducts.map((product, index) => (
                   <div
                     key={index}
+                    onMouseEnter={() => setHoveredCard(product.id)}
+  onMouseLeave={() => setHoveredCard(null)}
+  onClick={() => handleCardClick(product.id, product)} 
                     style={{
                       padding: "10px",
                       border: "1px solid #ccc",
                       borderRadius: "8px",
                       background: "#f9f9f9",
                       textAlign: "center",
+                      
                     }}
                   >
                     <img
@@ -137,14 +173,31 @@ const ProductCategory = () => {
                         borderRadius: "4px",
                       }}
                     />
+                      <div
+    className="add-to-cart-btn"
+    style={{
+      position: 'relative',
+      top: '0',
+      left: '0',
+      width: '100%',
+      backgroundColor: 'black',
+      color: 'white',
+      textAlign: 'center',
+      padding: '10px 0',
+      display: hoveredCard === product.id ? 'block' : 'none',
+      cursor: 'pointer',
+    }}
+    
+  >
+    Add to Cart
+  </div>
                     <h5>{product.name}</h5>
                     <p>Price: ${product.price}</p>
-                    
                   </div>
                 ))}
               </div>
             ) : (
-              <p></p>
+              <p>No products found in this category.</p>
             )}
           </Col>
         </Row>

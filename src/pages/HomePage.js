@@ -183,7 +183,7 @@ const HomePage = () => {
   className="card m-2 col-lg-3 col-md-4 col-sm-12 col-xs-12 col-xm-12"
   style={{
     height: '400px',
-    width: 'auto',
+    width: '300px',
     borderRadius: '10px',
     boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
     position: 'relative',
@@ -201,7 +201,7 @@ const HomePage = () => {
   <div
     className="add-to-cart-btn"
     style={{
-      position: 'absolute',
+      position: 'relative',
       top: '0',
       left: '0',
       width: '100%',
@@ -272,7 +272,7 @@ const HomePage = () => {
                     <div
                       className="add-to-cart-btn"
                       style={{
-                        position: 'absolute',
+                        position: 'relative',
                         top: '0',
                         left: '0',
                         width: '100%',
@@ -306,7 +306,7 @@ const HomePage = () => {
       </Container>
       <div>        
       </div>
-      <h2 style={{ color: '#DB4444', fontSize: '30px' }}>ProductCategory</h2>
+      
       <ProductCategory />
       <br></br>
           </div>

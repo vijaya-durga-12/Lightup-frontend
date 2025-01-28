@@ -19,10 +19,10 @@ export const fetchproductsfailure = (error) => ({
   type: FETCH_PRODUCTS_FAILURE,
   payload: error,
 });
-export const setSelectedProduct = (products) => {
+export const setSelectedProduct = (selectedProduct) => {
   return {
     type: 'SET_SELECTED_PRODUCT',
-    payload: products,
+    payload: selectedProduct,
   };
 };
 
