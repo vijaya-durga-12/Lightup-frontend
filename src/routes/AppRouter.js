@@ -1,10 +1,11 @@
 import {createBrowserRouter} from "react-router-dom"
 import Header from "../components/Layout/Header";
 import HomePage from "../pages/HomePage";
-import CartPage from "../pages/CartPage";
+
 import Register from "../pages/Register";
 import Login from "../pages/Login";
 import ProductPage from "../pages/ProductPage";
+import CartPage from "../pages/CartPage";
 const AppRouter =createBrowserRouter(
     [
         {
@@ -16,7 +17,7 @@ const AppRouter =createBrowserRouter(
                 index:true
             },
             {
-                path:"/Cartpage",
+                path:"/cartPage",
                 element:<CartPage/>
             },
             {
@@ -30,7 +31,8 @@ const AppRouter =createBrowserRouter(
             {
                 path:"/productpage",
                             element:<ProductPage/>
-            }
+            },
+            
         ]
 
 

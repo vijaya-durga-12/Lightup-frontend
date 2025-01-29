@@ -17,14 +17,13 @@ import { CiMobile4 } from "react-icons/ci";
 
 
 const ProductCategory = () => {
-  const { products = [], error = null, loading = false } = useSelector((state) => state.products || {});
+  const { products = [] } = useSelector((state) => state.products || {});
   const dispatch =useDispatch()
   const navigate=useNavigate()
   
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [activeCategory, setActiveCategory] = useState(null);
  const [hoveredCard, setHoveredCard] = useState(null);
-  const [cartItems, setCartItems] = useState([]);
   const categoryCardClick = (categoryid) => {
     const filtered = products.filter(
       (product) => String(product.category_id) === String(categoryid)
@@ -103,25 +102,21 @@ const ProductCategory = () => {
                 <div
                   key={index}
                   style={{
-                    padding: "5%",
-                    borderWidth: "2px",
-                    
-                 
-                  width:"10000px",
+                    padding: "4%",
+                    borderWidth: "2px",                  
                     borderStyle: "solid",
                     background: activeCategory === category.categoryid ? "#a4a7ab" : "white",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
                     justifyContent: "center",
-                    cursor: "pointer",
-                    
+                    cursor: "pointer",                   
                   }}
                   onClick={() => categoryCardClick(category.categoryid)}
                 >
                   <span
                     style={{
-                      fontSize: "50px",
+                      fontSize: "40px",
                       display: "block",
                       padding: "10px",
                     }}
@@ -197,7 +192,7 @@ const ProductCategory = () => {
                 ))}
               </div>
             ) : (
-              <p>No products found in this category.</p>
+              <p></p>
             )}
           </Col>
         </Row>
