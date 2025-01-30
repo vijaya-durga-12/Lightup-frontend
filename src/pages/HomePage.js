@@ -11,6 +11,7 @@ import image2 from '../assets/images/image16.png';
 import image3 from '../assets/images/image18.png';
 import image4 from '../assets/images/image17.png';
 import image5 from '../assets/images/image19.png';
+import { fetchcartproductsendsuccess, fetchcartproductsuccess } from '../features/cart/cartActions';
 
 const renderStars = (rating, onClick, productId) => {
   const stars = [];
@@ -34,7 +35,7 @@ const renderStars = (rating, onClick, productId) => {
 
 const HomePage = () => {
   const { products = [], error = null, loading = false } = useSelector((state) => state.products || {});
-    console.log(products)
+    
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState(3600); // 1 hour in seconds
@@ -78,7 +79,9 @@ const HomePage = () => {
   };
 
   const addToCart = (product) => {
+    
     setCartItems((prevCartItems) => [...prevCartItems, product]);
+    dispatch(fetchcartproductsendsuccess(product))
   };
 
   const handleRating = (rating, productId) => {

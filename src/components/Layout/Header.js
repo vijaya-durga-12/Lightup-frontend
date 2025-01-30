@@ -13,6 +13,9 @@ const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data = {} } = useSelector((state) => state.users); // Access user state
+  const onclickcart = () => {
+    navigate('/login'); // Path must match router definition
+  };
 
   const location = useLocation();
 
@@ -107,7 +110,11 @@ const Header = () => {
                   className="text-dark me-3"
                   style={{ cursor: "pointer" }}
                 />
-                <ShoppingCartIcon className="text-dark" style={{ cursor: "pointer" }} />
+<ShoppingCartIcon
+  className="text-dark"
+  style={{ cursor: "pointer" }}
+  onClick={()=>{navigate("/cartpage")}}
+/>
               </div>
             )}
           </Navbar.Collapse>
