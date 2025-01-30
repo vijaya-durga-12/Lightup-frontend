@@ -48,9 +48,9 @@ const ProductCategory = () => {
     };
 
   const categories = [
-    { categoryicon: <CiMobile4 /> , context: "Phone", categoryid: "2" },
+    { categoryicon: <CiMobile4 /> , context: "Phone", categoryid: "1" },
     { categoryicon: <IoIosDesktop />
-      , context: "Computer", categoryid: "1" },
+      , context: "Computer", categoryid: "2" },
     { categoryicon: <BsSmartwatch />, context: "Smartwatch", categoryid: "5" },
     { categoryicon: <CiCamera />, context: "Camera", categoryid: "3" },
     { categoryicon: <IoHeadsetOutline />, context: "Headphone", categoryid: "6" },

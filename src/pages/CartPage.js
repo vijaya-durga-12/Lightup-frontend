@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Container, Row, Col, Button, Card } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 
 const CartPage = () => {
   const { cartProduct = [] } = useSelector((state) => state.cart);
