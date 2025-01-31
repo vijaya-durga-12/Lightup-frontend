@@ -1,11 +1,19 @@
-import React from 'react'
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { Container } from 'react-bootstrap';
 
 const CartPage = () => {
-  return (
-    <div>
-      <p>lokeshLkjhg</p>
-    </div>
-  )
-}
+  const { cartProduct = [] } = useSelector((state) => state.cart);
 
-export default CartPage
+  return (
+    <Container className="mt-4">
+      <h1 className="text-center">Shopping Cart</h1>
+<h2>{cartProduct.id}</h2>
+<h2>{cartProduct.description}</h2>
+
+      
+    </Container>
+  );
+};
+
+export default CartPage;

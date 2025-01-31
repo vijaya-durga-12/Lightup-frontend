@@ -3,11 +3,13 @@ import {
   FETCH_PRODUCTS_SUCCESS,
   FETCH_PRODUCTS_FAILURE,
   SET_SELECTED_PRODUCT,
+  GET_SEARCH_PRODUCT,
+  
 } from './productActions';
 
 const initialState = {
   products: [],
-  
+  searchproduct:[],
   selectedProduct: [],
   loading: false,
   error: null,
@@ -26,6 +28,9 @@ const productReducer = (state = initialState, action) => {
     case SET_SELECTED_PRODUCT:
       console.log(action.payload)
       return { ...state, selectedProduct: action.payload };
+    case GET_SEARCH_PRODUCT:
+      
+      return {...state,searchproduct:action.payload}
     default:
       return state;
   }
