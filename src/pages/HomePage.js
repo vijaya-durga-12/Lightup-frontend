@@ -11,6 +11,7 @@ import image3 from '../assets/images/image18.png';
 import image4 from '../assets/images/image17.png';
 import image5 from '../assets/images/image19.png';
 
+
 const renderStars = (rating, onClick, productId) => {
   const stars = [];
   for (let i = 1; i <= 5; i++) {
