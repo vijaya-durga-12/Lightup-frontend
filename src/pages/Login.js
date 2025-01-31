@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
-import sideImage from '../../src/assets/images/cart.jpg';
-import { Link, useNavigate } from 'react-router-dom';
-import { fetchusersrequest } from '../features/user/userActions';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState } from "react";
+import { Container, Row, Col } from "react-bootstrap";
+import sideImage from "../../src/assets/images/cart.jpg";
+import { Link, useNavigate } from "react-router-dom";
+import { fetchusersrequest } from "../features/user/userActions";
+import { useDispatch, useSelector } from "react-redux";
+
 
 const Login = () => {
   
@@ -27,28 +28,32 @@ const Login = () => {
     await setLogin({ ...login, [e.target.name]: e.target.value });
   };
 
-  useEffect(()=>{    dispatch(fetchusersrequest());
-  },[dispatch])
-
-
-
+  useEffect(() => {
+    dispatch(fetchusersrequest());
+  }, [dispatch]);
+  
+  console.log(login)
   const sub = (e) => {
     e.preventDefault();
-    console.log("Login form submitted:", login);
-     // Dispatch action to fetch users
 
-
-    // Validate credentials
-    const matchingUser = users.find(
-      (user) => user.email === login.email && user.password === login.password
-    );
-
-    if (matchingUser) {
-      alert("Login successful:", matchingUser);
-      navigate('/');
+    if (login.email === adminEmail && login.password === adminPassword) {
+      alert("Admin Login Successful!");
+      navigate("/admin");
     } else {
-      console.log("Login failed:", error || "Invalid email or password");
+      const matchingUser = users.find(
+        (user) => user.email === login.email && user.password === login.password
+      );
+
+      if (matchingUser) {
+        alert("Login successful:", matchingUser);
+        navigate("/");
+      } else {
+        console.log("Login failed:", error || "Invalid email or password");
+      }
     }
+   
+    console.log("Login form submitted:", login);
+    // Dispatch action to fetch users
   };
 
   return (
