@@ -1,11 +1,13 @@
-import React from 'react'
 
-const cartActions = () => {
-  return (
-    <div>
-      
-    </div>
-  )
-}
+export const FETCH_CART_PRODUCTSEND_SUCCESS ="FETCH_CART_PRODUCT_SUCCESS";
 
-export default cartActions
+
+
+
+export const fetchcartproductsendsuccess=(cartproduct)=>({
+  type:FETCH_CART_PRODUCTSEND_SUCCESS,
+  payload:cartproduct
+  
+})
+
+

@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import sideImage from '../../src/assets/images/cart.jpg';
 
 const Register = () => {
-  const Navigater=useNavigate()
+  const Navigater = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -24,7 +24,18 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true); // Set loading state to true
-  
+
+    // Password validation: must contain at least one uppercase letter
+    if (!/[A-Z]/.test(formData.password)) {
+      setLoading(false);
+      alert('Password must contain at least one uppercase letter');
+      return; // Stop the submission process if validation fails
+    }if (formData.role !== 'customer' && formData.role !== 'admin') {
+      alert('Role must be either "customer" or "admin"');
+      return;
+    }
+    
+
     try {
       const newUser = {
         id: Date.now(),
@@ -32,39 +43,45 @@ const Register = () => {
         email: formData.email,
         password: formData.password,
         role: formData.role,
-        phone_number: formData.phoneNumber, // Corrected to phone_number
+        phone_number: formData.phoneNumber, 
       };
-  
-      console.log('User data being sent to the API:', newUser); // Log the data being sent
-  
+
+      console.log('User data being sent to the API:', newUser); 
+
       const response = await fetch(
-        'https://39d2-2401-4900-1cb0-3d23-787c-3e46-f9fb-fb1.ngrok-free.app/api/users/register',
+        'http://192.168.1.6:3000/api/users/register',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newUser),
         }
       );
-  
+
       setLoading(false); // Set loading state to false after the request
-  
+
+      const data = await response.json(); // Parse the JSON response
+
       if (!response.ok) {
-        const errorData = await response.json();
-        console.log('Error response:', errorData); // Log the error response from the API
-        setError(errorData.message || 'Failed to create account');
+        // If the response is not OK (error from the server)
+        console.log('Error response:', data); // Log the error response from the API
+        setError(data.message || 'Failed to create account'); // Set the error message in state
+        alert(`Error: ${data.message || 'Failed to create account'}`); // Display the error message in an alert
         return;
       }
-  
-      // const data = await response.json();
-      alert('User registered successfully');
-      Navigater('/login')
-    } catch (error) { 
+
+      // If registration is successful, show the success message returned from the API
+      alert(`Success: ${data.message || 'User registered successfully'}`);
+      Navigater('/login'); // Redirect to login page
+    } catch (error) {
       setLoading(false); // Set loading state to false in case of error
       console.error('Error during registration:', error);
-      setError('Registration failed, please try again later');
+
+      // Display error message in an alert if a network or other error occurs
+      setError(error.message || 'Registration failed, please try again later'); // Set error state
+      alert(`Error: ${error.message || 'Registration failed, please try again later'}`);
     }
   };
-  
+
   const handleGoogleSignUp = () => {
     console.log('Google Sign Up clicked');
     // Google Sign Up implementation (e.g., Firebase or OAuth)
@@ -90,9 +107,9 @@ const Register = () => {
               {[ 
                 { type: 'text', name: 'name', placeholder: 'Name' },
                 { type: 'email', name: 'email', placeholder: 'Email' },
-                { type: 'text', name: 'phoneNumber', placeholder: 'Phone Number' }, // Fixed name here
+                { type: 'text', name: 'phoneNumber', placeholder: 'Phone Number' },
                 { type: 'password', name: 'password', placeholder: 'Password' },
-                { type: 'text', name: 'role', placeholder: 'Role' },
+                { type: 'text', name: 'role', placeholder: 'Role must be either customer or admin' },
               ].map((input, index) => (
                 <input
                   key={index}
