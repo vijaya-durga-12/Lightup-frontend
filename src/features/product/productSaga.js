@@ -1,11 +1,10 @@
 import { takeEvery, call, put } from 'redux-saga/effects';
-import { FETCH_PRODUCTS_REQUEST } from '../product/productActions';
+import { FETCH_PRODUCTS_REQUEST, FETCH_PRODUCTS_WITH_CATEGORY_REQUEST, fetchProductsWithCategoryFailure, fetchProductsWithCategorySuccess } from '../product/productActions';
 import { fetchproductssuccess, fetchproductsfailure } from '../product/productActions';
 
-// Function to fetch the products using fetch API
 const fetchTheApi = async () => {
   try {
-    const response = await fetch('http://192.168.1.6:3000/api/products/allproducts', {
+    const response = await fetch(`http://${process.env.REACT_APP_IP_ADDRESS}/api/products/allproducts`, {
       method: 'GET',
       headers: {
         'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // Replace with your actual token
@@ -22,6 +21,29 @@ const fetchTheApi = async () => {
   }
 };
 
+function* fetchProductsWithCategorySaga() {
+  try {
+    const response = yield call(fetch, `http://${process.env.REACT_APP_IP_ADDRESS}/api/products/products`, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer YOUR_ACCESS_TOKEN',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error ${response.status}: ${response.statusText}`);
+    }
+
+    const data = yield response.json();
+
+    yield put(fetchProductsWithCategorySuccess(data.products));
+  } catch (error) {
+    yield put(fetchProductsWithCategoryFailure(error.message));
+  }
+}
+
+
 // Saga to handle fetching the products
 function* fetchProductSaga() {
   try {
@@ -36,7 +58,11 @@ function* fetchProductSaga() {
   }
 }
 
-// Root saga to listen for FETCH_PRODUCTS_REQUEST action
+
+
 export default function* productSaga() {
   yield takeEvery(FETCH_PRODUCTS_REQUEST, fetchProductSaga);
+  yield takeEvery(FETCH_PRODUCTS_WITH_CATEGORY_REQUEST, fetchProductsWithCategorySaga);
+
+
 }

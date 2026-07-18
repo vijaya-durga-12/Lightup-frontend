@@ -1,188 +1,375 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
-import { FaStar, FaHeart, FaTruck, FaUndo } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { FaHeart, FaTruck, FaUndo } from "react-icons/fa";
+import ReactImageMagnify from "react-image-magnify";
+import { useNavigate } from "react-router-dom";
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardMedia,
+  Container,
+  Grid,
+  IconButton,
+  Typography,
+} from "@mui/material";
+import { fetcheckeoutpagedata } from "../features/cart/cartActions";
 
-const ProductDetailPage = () => {
-  const { selectedProduct = {} } = useSelector((state) => state.products || {});
-  const [selectedColor, setSelectedColor] = useState("");
-  const [selectedSize, setSelectedSize] = useState("");
+const getProductId = (product) => product.id || product._id;
+
+const ProductPage = () => {
+  const dispatch=useDispatch();
+  const navigate = useNavigate();
+  const [isLiked, setIsLiked] = useState(false);
+  const [activeButton, setActiveButton] = useState("");
   const [quantity, setQuantity] = useState(1);
-  const [mainImage, setMainImage] = useState(""); // Added state to manage main image
 
-  console.log(selectedProduct);
+  const products = useSelector((state) => state.products?.products || []);
+  const selectedProductFromRedux = useSelector(
+    (state) => state.products?.selectedProduct || {}
+  );
 
-  if (!selectedProduct || Object.keys(selectedProduct).length === 0) {
-    return <div>No product selected!</div>;
-  }
+  const [product, setProduct] = useState(selectedProductFromRedux);
+
+  useEffect(() => {
+    setProduct(selectedProductFromRedux);
+  }, [selectedProductFromRedux]);
 
   const {
-    images = [],
-    title,
-    rating = 0,
-    reviews = 0,
-    price,
-    description,
-    colors = [],
-    sizes = [],
-  } = selectedProduct;
+    name: title = "No Title",
+    description = "No Description Available",
+    image_url = "",
+    price = "0",
+    stock = 0,
+    category_id,
+    id,
+    user_id,
+  } = product || {};
 
-  const fallbackImage = selectedProduct;  // Placeholder if no images exist
-  const defaultMainImage = images.length > 0 ? images[0].image_url : fallbackImage;
-  
-  // Set the default main image if no image has been selected
-  if (!mainImage) {
-    setMainImage(defaultMainImage);
-  }
+  const [mainImage, setMainImage] = useState(image_url);
 
-  const handleQuantityChange = (type) => {
-    setQuantity((prev) => (type === "increment" ? prev + 1 : prev > 1 ? prev - 1 : 1));
+  useEffect(() => {
+    setMainImage(product?.image_url || "");
+  }, [product]);
+
+  const relatedProducts = products.filter(
+    (p) =>
+      p.category_id === category_id && getProductId(p) !== getProductId(product)
+  );
+
+  const handleCardClick = (clickedProduct) => {
+    setProduct(clickedProduct);
+    setQuantity(1);
+    setIsLiked(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Calculate the total price based on the quantity
-  const totalPrice = price * quantity;
+  const handleQuantityChange = (type) => {
+    setActiveButton(type);
+    setQuantity((prev) =>
+      type === "increment" ? prev + 1 : Math.max(prev - 1, 1)
+    );
+  };
+
+  const handleBuy = () => {
+    if (!product) return;
+
+    const checkoutItem = [
+      {
+        userId: user_id || "Guest",
+        productId: id,
+        productName: title,
+        productImage: image_url,
+        productPrice: parseFloat(price),
+        quantity,
+        totalPrice: parseFloat(price) * quantity,
+      },
+    ];
+  
+
+    navigate("/CheckoutPage");
+      dispatch(fetcheckeoutpagedata(checkoutItem));
+
+  };
+
+  const responsive = {
+    superLargeDesktop: { breakpoint: { max: 4000, min: 1921 }, items: 5 },
+    desktop: { breakpoint: { max: 1920, min: 1024 }, items: 4 },
+    tablet: { breakpoint: { max: 1024, min: 768 }, items: 2 },
+    mobile: { breakpoint: { max: 768, min: 0 }, items: 1 },
+  };
+
+  if (!product || Object.keys(product).length === 0) {
+    return (
+      <Box textAlign="center" mt={10}>
+        <Typography color="error" fontSize={20}>
+          No product selected!
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
-    <div className="container my-4">
-      <div className="row">
-        {/* Left Side: Product Images */}
-        <div className="col-md-6">
-          <div className="d-flex flex-column align-items-center">
-            {/* Small Images */}
-            <div className="d-flex mb-3">
-              {images.length > 0 ? (
-                images.slice(0, 4).map((img, index) => (
-                  <img
-                    key={index}
-                    src={img.image_url}
-                    alt={`Product thumbnail ${index + 1}`}
-                    className="img-thumbnail me-2"
-                    style={{ width: "80px", height: "80px", cursor: "pointer" }}
-                    onClick={() => setMainImage(img.image_url)} 
-                  />
-                ))
-              ) : (
-                <p>{title}</p>
-              )}
-            </div>
-            {/* Main Image */}
-            <img
-              src={mainImage.image_url}  
-              alt="Product"
-              className="img-fluid"
-              style={{ width: "400px", height: "400px", border: "1px solid #ccc" }}
-            />
-          </div>
-        </div>
+    <Box p={3}>
+      <Card elevation={4} sx={{ borderRadius: 3, p: 3 }}>
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={6}>
+            <Box maxWidth={400} mx="auto">
+              <ReactImageMagnify
+                smallImage={{
+                  alt: "Product",
+                  isFluidWidth: true,
+                  src: mainImage,
+                }}
+                largeImage={{
+                  src: mainImage,
+                  width: 1200,
+                  height: 1200,
+                }}
+                enlargedImagePosition="beside"
+              />
+            </Box>
+          </Grid>
 
-        {/* Right Side: Product Details */}
-        <div className="col-md-6">
-          {/* Product Title */}
-          <h1 className="text-center mb-3">{title}</h1>
+          <Grid item xs={12} md={6}>
+            <Typography variant="h4" fontWeight="bold" mb={2}>
+              {title}
+            </Typography>
 
-          {/* Rating and Reviews */}
-          <div className="d-flex align-items-center justify-content-center mb-3">
-            <div className="text-warning d-flex align-items-center me-2">
-              {[...Array(5)].map((_, i) => (
-                <FaStar key={i} color={i < rating ? "#ffc107" : "#e4e5e9"} />
+            <Typography variant="h5" color="primary" mb={2}>
+              ₹ {(price * quantity).toFixed(2)}
+            </Typography>
+
+            <Typography color="textSecondary" mb={2}>
+              {description}
+            </Typography>
+
+            <Typography
+              mb={2}
+              color={stock > 0 ? "textPrimary" : "error"}
+              fontWeight="bold"
+            >
+              Stock: {stock > 0 ? stock : "Out of Stock"}
+            </Typography>
+
+            <Box display="flex" gap={2} mb={2}>
+              <Typography>Colors:</Typography>
+              {["blue", "pink"].map((color) => (
+                <Box
+                  key={color}
+                  sx={{
+                    width: 24,
+                    height: 24,
+                    bgcolor: color,
+                    borderRadius: "50%",
+                    border: "2px solid #333",
+                    cursor: "pointer",
+                  }}
+                />
               ))}
-              <span className="ms-2">({rating.toFixed(1)})</span>
-            </div>
-            <span className="ms-3">{reviews} reviews</span>
-          </div>
+            </Box>
 
-          {/* Price */}
-          <h3 className="text-success mb-3 text-center">${totalPrice.toFixed(2)}</h3>  {/* Display total price */}
-
-          {/* Description */}
-          <p className="text-center mb-3">{description}</p>
-
-          <hr />
-
-          {/* Color Selection */}
-          <div className="mb-3 text-center">
-            <strong>Color:</strong>
-            <div className="d-flex justify-content-center mt-2">
-              {colors.map((color, index) => (
-                <div
-                  key={index}
-                  onClick={() => setSelectedColor(color)}
-                  className={`me-2 rounded-circle border ${
-                    selectedColor === color ? "border-primary" : ""
-                  }`}
-                  style={{
-                    width: "30px",
-                    height: "30px",
-                    backgroundColor: color,
+            <Box display="flex" alignItems="center" gap={1} mb={3}>
+              <Typography>Size:</Typography>
+              {["XS", "S", "M", "L", "XL"].map((size) => (
+                <Box
+                  key={size}
+                  px={2}
+                  py={0.5}
+                  sx={{
+                    border: "1px solid #444",
+                    borderRadius: 1,
+                    fontWeight: 500,
                     cursor: "pointer",
                   }}
                 >
-                  <radio>{color}</radio>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Size Selection */}
-          <div className="mb-3 text-center">
-            <strong>Size:</strong>
-            <div className="d-flex justify-content-center mt-2">
-              {sizes.map((size, index) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedSize(size)}
-                  className={`btn btn-outline-secondary me-2 ${
-                    selectedSize === size ? "active" : ""
-                  }`}
-                >
                   {size}
-                </button>
+                </Box>
               ))}
-            </div>
-          </div>
+            </Box>
 
-          {/* Quantity Selector, Buy Now, and Favorite Buttons */}
-          <div className="d-flex align-items-center justify-content-center mb-4">
-            {/* Quantity Selector */}
-            <div className="d-flex align-items-center me-3">
-              <button
-                className="btn btn-outline-secondary"
-                onClick={() => handleQuantityChange("decrement")}
+            <Box display="flex" alignItems="center" gap={2} mb={3}>
+              <Box display="flex" border="1px solid #aaa" borderRadius={1}>
+                <Button
+                  onClick={() => handleQuantityChange("decrement")}
+                  sx={{
+                    minWidth: 40,
+                    bgcolor:
+                      activeButton === "decrement" ? "#DB4444" : "transparent",
+                    color: "black",
+                    borderRight: "1px solid #000",
+                  }}
+                >
+                  -
+                </Button>
+                <Box px={3} py={1.5}>{quantity}</Box>
+                <Button
+                  onClick={() => handleQuantityChange("increment")}
+                  sx={{
+                    minWidth: 40,
+                    bgcolor:
+                      activeButton === "increment" ? "#DB4444" : "transparent",
+                    color: "black",
+                    borderLeft: "1px solid #000",
+                  }}
+                >
+                  +
+                </Button>
+              </Box>
+
+              <Button
+                variant="contained"
+                color="error"
+                onClick={handleBuy}
+                disabled={stock === 0}
               >
-                -
-              </button>
-              <span className="px-3">{quantity}</span>
-              <button
-                className="btn btn-outline-danger"
-                onClick={() => handleQuantityChange("increment")}
-              >
-                +
-              </button>
-            </div>
+                Buy Now
+              </Button>
 
-            {/* Buy Now Button */}
-            <button className="btn btn-danger me-3">Buy Now</button>
+              <IconButton onClick={() => setIsLiked(!isLiked)}>
+                <FaHeart
+                  style={{
+                    fill: isLiked ? "#dc3545" : "transparent",
+                    stroke: "black",
+                    strokeWidth: "30px",
+                  }}
+                />
+              </IconButton>
+            </Box>
 
-            {/* Favorite Icon */}
-            <button className="btn btn-outline-danger">
-              <FaHeart />
-            </button>
-          </div>
+            <Box border="1px solid #ccc" borderRadius={2} p={2} maxWidth={350}>
+              <Box display="flex" gap={2} mb={1}>
+                <FaTruck size={20} />
+                <Box>
+                  <Typography fontWeight="bold">Free Delivery</Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Enter your postal code for Delivery Availability
+                  </Typography>
+                </Box>
+              </Box>
+              <hr />
+              <Box display="flex" gap={2} mt={1}>
+                <FaUndo size={20} />
+                <Box>
+                  <Typography fontWeight="bold">Easy Returns</Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Free 30 Days Delivery Returns. Details
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          </Grid>
+        </Grid>
+      </Card>
 
-          {/* Delivery and Return Info */}
-          <div className="d-flex flex-column align-items-center mt-4" style={{ width: "100%" }}>
-            <div className="border p-3 text-center mb-3" style={{ maxWidth: "300px", width: "100%" }}>
-              <FaTruck className="mb-2" size={24} />
-              <p className="mb-0">Free Delivery</p>
-            </div>
-            <div className="border p-3 text-center" style={{ maxWidth: "300px", width: "100%" }}>
-              <FaUndo className="mb-2" size={24} />
-              <p className="mb-0">Easy Returns</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+      {relatedProducts.length > 0 && (
+        <Container sx={{ mt: 6 }}>
+          <Typography variant="h5" textAlign="center" mb={3}>
+            Related Products
+          </Typography>
+          <Carousel
+            responsive={responsive}
+            infinite
+            autoPlay={false}
+            arrows
+            customLeftArrow={
+              <button className="custom-arrow custom-left">‹</button>
+            }
+            customRightArrow={
+              <button className="custom-arrow custom-right">›</button>
+            }
+          >
+            {relatedProducts.map((related) => (
+              <Box key={getProductId(related)} px={1}>
+                <Card
+                  onClick={() => handleCardClick(related)}
+                  sx={{
+                    width: 220,
+                    height: 340,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    transition: "transform 0.3s",
+                    ":hover": {
+                      boxShadow: 6,
+                      transform: "translateY(-6px)",
+                    },
+                    cursor: "pointer",
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    image={related.image_url}
+                    alt={related.name}
+                    sx={{
+                      height: 180,
+                      width: "100%",
+                      objectFit: "cover",
+                    }}
+                    onError={(e) => (e.target.src = "/placeholder.jpg")}
+                  />
+                  <CardContent
+                    sx={{
+                      flexGrow: 1,
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Typography variant="subtitle1" fontWeight="bold" noWrap>
+                      {related.name}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{
+                        overflow: "hidden",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                      }}
+                    >
+                      {related.description}
+                    </Typography>
+                    <Typography fontSize={14} color="green" fontWeight="bold">
+                      ₹{parseFloat(related.price).toLocaleString("en-IN")}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Box>
+            ))}
+          </Carousel>
+        </Container>
+      )}
+
+      <style>{`
+        .custom-arrow {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 10;
+          background: white;
+          border: 1px solid #ccc;
+          border-radius: 50%;
+          width: 40px;
+          height: 40px;
+          font-size: 24px;
+          font-weight: bold;
+          cursor: pointer;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .custom-left {
+          left: 10px;
+        }
+        .custom-right {
+          right: 10px;
+        }
+      `}</style>
+    </Box>
   );
 };
 
-export default ProductDetailPage;
+export default ProductPage;

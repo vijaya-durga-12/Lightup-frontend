@@ -43,7 +43,7 @@ const AddUserForm = () => {
 
     try {
       const response = await fetch(
-        "http://192.168.1.6:3000/api/users/register",
+        `http://${process.env.REACT_APP_IP_ADDRESS}/api/users/register`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -84,7 +84,7 @@ const AddUserForm = () => {
 
           <Col xs={12} md={6} className="text-md-start text-center">
             <h1
-              style={{ fontSize: "2rem", color: "#007bff", fontWeight: "bold" }}
+              style={{ fontSize: "2rem", color: " #131523", fontWeight: "bold" }}
             >
               New Users
             </h1>

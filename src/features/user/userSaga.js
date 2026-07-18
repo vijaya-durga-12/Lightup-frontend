@@ -3,16 +3,19 @@ import { FETCH_USERS_REQUEST, fetchUserssuccess, fetchusersfailuer } from "../us
 
 // Fetch API function
 const fetchapi = async () => {
-    try {
-      const response = await fetch('http://192.168.1.6:3000/api/users/all');
-      const data = await response.json();
-      console.log("API Response:", data); 
-      return data.users; 
-    } catch (error) {
-      console.error("API Fetch Error:", error.message); 
-      throw new Error('Failed to fetch users: ' + error.message);
-    }
-  };
+  try {
+    const response = await fetch(`http://${process.env.REACT_APP_IP_ADDRESS}/api/users/all`);
+    const data = await response.json();
+    
+    console.log("API Fetch Response:", data); // Debug API response
+    
+    return data.users || []; // Ensure it returns an array
+  } catch (error) {
+    console.error("API Fetch Error:", error.message);
+    throw new Error("Failed to fetch users: " + error.message);
+  }
+};
+
 
 
 function* usersSaga() {
@@ -27,3 +30,4 @@ function* usersSaga() {
 export default function* userSaga() {
   yield takeEvery(FETCH_USERS_REQUEST, usersSaga);
 }
+
