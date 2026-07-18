@@ -18,7 +18,6 @@ const Register = () => {
     email:""
 
   })
-  console.log(setGoogleData)
   const [message, setMessage] = useState(null); 
   const [error, setError] = useState(""); 
   const [loading, setLoading] = useState(false); 
@@ -49,6 +48,7 @@ const Register = () => {
         password: formData.password,
         role: formData.role,
       };
+      console.log("New User Data:", newUser); // Log the user data
       const response = await fetch(
         `http://${process.env.REACT_APP_IP_ADDRESS}/api/users/register`,
         {
